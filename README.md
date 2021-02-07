@@ -15,14 +15,16 @@ npm i singleton-promise -save
 
 ## 使用
 
+- 调用 `call` 方法时，传入的 `callback` 参数，必须是同一函数引用，用于判断相同请求。
+
 ```
 import Singleton from 'singleton-promise'
 
 const singleton = new Singleton()
 
-const src = 'https://cdn.bootcdn.net/ajax/libs/echarts/5.0.1/echarts.min.js'
+const loadEcharts = () => loadScript('https://cdn.bootcdn.net/ajax/libs/echarts/5.0.1/echarts.min.js')
 
-singleton.call(() => loadScript(src)).then(() => {
+singleton.call(loadEcharts).then(() => {
   console.log('source loaded')
 })
 
@@ -34,7 +36,7 @@ singleton.call(() => loadScript(src)).then(() => {
 
 - 创建实例时，可传 `retry` 参数，表示请求资源失败时，自动重试次数
 
-- 调用 `call` 方法时，可传 `name` 参数，显性标识相同请求
+- 调用 `call` 方法时，可传 `name` 参数，显性标识相同请求。此时 `callback` 参数可使用任意函数。
 
 ```
 import Singleton from 'singleton-promise'
@@ -80,4 +82,6 @@ singleton.call(src, () => loadScript(src)).then(() => {
 
 ## 注意
 
-内部不包含 Promise 的 polyfill。如在浏览器环境使用，需要自行polyfill。
+- 忽略 `name` 参数时，传入的 `callback` 参数，必须是同一函数引用，用于判断相同请求。
+
+- 内部不包含 Promise 的 polyfill。如在浏览器环境使用，需要自行polyfill。
