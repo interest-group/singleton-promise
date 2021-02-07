@@ -1,6 +1,6 @@
 {
   "name": "singleton-promise",
-  "version": "0.1.3",
+  "version": "0.1.5",
   "description": "promise单例化",
   "main": "./dist/main.js",
   "scripts": {

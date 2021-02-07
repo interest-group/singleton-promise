@@ -1,3 +1,5 @@
+import { findIndex, find, splice } from './util'
+
 // eslint-disable-next-line no-undef
 const Promise = Promise || global.Promise
 
@@ -16,7 +18,7 @@ Singleton.prototype = {
    * @param {Function} callback 回调函数
    * @returns {Promise} promise
    */
-  call (name, callback) {
+  call(name, callback) {
     const request = callback || name
     if (typeof request !== 'function') {
       throw new Error('callback must be a Function')
@@ -27,20 +29,22 @@ Singleton.prototype = {
    * 释放资源
    * @param {*} [name]  唯一标识
    */
-  remove (name) {
-    const index = this.findSourceIndex(name)
-    this.queue[index] = null
+  remove(name) {
+    const index = findIndex(this.queue, (source) => source.key === name)
+    if (index >= 0) {
+      splice(this.queue, index, 1)
+    }
   },
   /**
    * 释放所有资源
    */
-  removeAll () {
+  removeAll() {
     this.queue = []
   },
   // 请求资源
-  start (key, request) {
+  start(key, request) {
     // 资源
-    let source = this.queue[this.findSourceIndex(key)]
+    let source = find(this.queue, (source) => source.key === key)
     if (!source) {
       source = { key, retry: this.retry, request }
       this.queue.push(source)
@@ -52,8 +56,8 @@ Singleton.prototype = {
     return source.promise
   },
   // 创建promise
-  setPromise (source) {
-    source.promise = Promise.resolve(source.request(source)).catch(error => {
+  setPromise(source) {
+    source.promise = Promise.resolve(source.request(source)).catch((error) => {
       // 错误，重试计次
       if (source.retry >= 1) {
         source.retry--
@@ -66,14 +70,6 @@ Singleton.prototype = {
         return Promise.reject(error)
       }
     })
-  },
-  findSourceIndex (key) {
-    for (let i = 0; i < this.queue.length;i++ ) {
-      if (this.queue[i] && this.queue[i].key === key) {
-        return i
-      }
-    }
-    return -1
   }
 }
 
