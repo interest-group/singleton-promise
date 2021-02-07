@@ -31,9 +31,10 @@ singleton.call(() => loadScript(src)).then(() => {
 
 ## 参数
 
-创建实例时，可传 `retry` 参数，表示请求资源失败时，自动重试次数
 
-调用 `call` 方法时，可传 `name` 参数，显性标识相同请求
+- 创建实例时，可传 `retry` 参数，表示请求资源失败时，自动重试次数
+
+- 调用 `call` 方法时，可传 `name` 参数，显性标识相同请求
 
 ```
 import Singleton from 'singleton-promise'
@@ -76,3 +77,7 @@ singleton.call(src, () => loadScript(src)).then(() => {
 
 从实例中移除所有请求
 
+
+## 注意
+
+内部不包含 Promise 的 polyfill。如在浏览器环境使用，需要自行polyfill。

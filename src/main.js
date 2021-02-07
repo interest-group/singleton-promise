@@ -1,3 +1,6 @@
+// eslint-disable-next-line no-undef
+const Promise = Promise || global.Promise
+
 function Singleton(retry) {
   if (retry && typeof retry !== 'number') {
     throw new Error('retry must be a Number')
@@ -9,9 +12,9 @@ function Singleton(retry) {
 Singleton.prototype = {
   /**
    * 发起请求
-   * @param [name] * 唯一标识
-   * @param callback 回调函数
-   * @returns promise
+   * @param {*} [name]  唯一标识
+   * @param {Function} callback 回调函数
+   * @returns {Promise} promise
    */
   call (name, callback) {
     const request = callback || name
@@ -20,21 +23,24 @@ Singleton.prototype = {
     }
     return this.start(name, request)
   },
-  // 释放资源
+  /**
+   * 释放资源
+   * @param {*} [name]  唯一标识
+   */
   remove (name) {
-    const index = this.queue.findIndex(source => source.key === name)
-    if (index >= 0) {
-      this.queue.splice(index, 1)
-    }
+    const index = this.findSourceIndex(name)
+    this.queue[index] = null
   },
-  // 释放所有
+  /**
+   * 释放所有资源
+   */
   removeAll () {
     this.queue = []
   },
   // 请求资源
   start (key, request) {
     // 资源
-    let source = this.queue.find(source => source.key === key)
+    let source = this.queue[this.findSourceIndex(key)]
     if (!source) {
       source = { key, retry: this.retry, request }
       this.queue.push(source)
@@ -60,6 +66,14 @@ Singleton.prototype = {
         return Promise.reject(error)
       }
     })
+  },
+  findSourceIndex (key) {
+    for (let i = 0; i < this.queue.length;i++ ) {
+      if (this.queue[i] && this.queue[i].key === key) {
+        return i
+      }
+    }
+    return -1
   }
 }
 
