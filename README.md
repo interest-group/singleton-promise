@@ -85,3 +85,5 @@ singleton.call(src, () => loadScript(src)).then(() => {
 - 忽略 `name` 参数时，传入的 `callback` 参数，必须是同一函数引用，用于判断相同请求。
 
 - 内部不包含 Promise 的 polyfill。如在浏览器环境使用，需要自行polyfill。
+
+- more
